@@ -13,6 +13,6 @@ prediction = clf.predict([[id,Age,CreditScore,Balance,EstimatedSalary]])
 d=pd.read_csv('train.csv')
 if st.button("Dự đoán"):
     input_data = np.array([[id, Age, CreditScore, Balance, EstimatedSalary]])
-    prediction = clf.predict(input_data_scaled)
+    prediction = clf.predict(input_data)
     predicted_class = "Rời bỏ" if prediction[0] == 1 else "Ở lại"
     st.write(f"Dự đoán: {predicted_class}")
