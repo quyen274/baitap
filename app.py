@@ -1,6 +1,7 @@
 import streamlit as st
 import pickle
 import pandas as pd
+import numpy as np
 clf=pickle.load(open('bank_churn_1.pkl','rb'))
 st.title("Dự đoán sự rời bỏ của khách hàng ngân hàng")
 id=st.number_input("id khách",0,82516,1002)
