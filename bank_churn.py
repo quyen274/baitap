@@ -3,6 +3,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 import pickle as pickle
 import streamlit as st
+import numpy as np
 d= pd.read_csv('train.csv')
 feature=['id','Age','CreditScore','Balance','EstimatedSalary']
 target=['Exited']
