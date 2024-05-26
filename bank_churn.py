@@ -9,6 +9,8 @@ feature=['id','Age','CreditScore','Balance','EstimatedSalary']
 target=['Exited']
 X=d[feature]
 y=d[target]
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
 X_train, X_test, y_train, y_test = train_test_split(X,y, test_size= 1/4, random_state=42,)
 clf = LogisticRegression()
 clf.fit(X_train, y_train)
