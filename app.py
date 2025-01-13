@@ -1,18 +1,35 @@
+from transformers import AutoModelForCausalLM, AutoTokenizer
 import streamlit as st
-import pickle
-import pandas as pd
-import numpy as np
-clf=pickle.load(open('bank_churn_1.pkl','rb'))
-st.title("Dự đoán sự rời bỏ của khách hàng ngân hàng")
-id=st.number_input("id khách",0,82516,1002)
-Age = st.number_input("Tuổi", 18, 42, 30)
-CreditScore = st.number_input("Điểm tín dụng", 0, 656, 600)
-Balance = st.number_input("Số dư tài khoản", 0.0, 55478.086689, 50000.0)
-EstimatedSalary = st.number_input("Lương ước tính", 0.0, 112574.822734, 53213.0)
-prediction = clf.predict([[id,Age,CreditScore,Balance,EstimatedSalary]])
-d=pd.read_csv('train.csv')
-if st.button("Dự đoán"):
-    input_data = np.array([[id, Age, CreditScore, Balance, EstimatedSalary]])
-    prediction = clf.predict(input_data)
-    predicted_class = "Rời bỏ" if prediction[0] == 1 else "Ở lại"
-    st.write(f"Dự đoán: {predicted_class}")
+import os
+
+# Tải mô hình GPT-J
+model_name = "EleutherAI/gpt-j-6B"  # Hoặc thay bằng "bigscience/bloom-560m"
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+model = AutoModelForCausalLM.from_pretrained(model_name)
+
+st.title("Chatbot GPT-J với Ngữ Cảnh")
+
+# Lưu trữ lịch sử hội thoại
+if "chat_history" not in st.session_state:
+    st.session_state["chat_history"] = ""
+
+# Đầu vào từ người dùng
+user_input = st.text_input("Hãy nhập câu hỏi của bạn:")
+
+if user_input:
+    # Thêm câu hỏi vào lịch sử hội thoại
+    st.session_state["chat_history"] += f"Người dùng: {user_input}\n"
+
+    # Tạo prompt với lịch sử hội thoại
+    inputs = tokenizer(st.session_state["chat_history"], return_tensors="pt")
+    outputs = model.generate(inputs.input_ids, max_length=500, pad_token_id=tokenizer.eos_token_id)
+
+    # Phản hồi từ bot
+    bot_response = tokenizer.decode(outputs[0], skip_special_tokens=True)
+    bot_response = bot_response[len(st.session_state["chat_history"]):].strip()
+
+    # Thêm phản hồi vào lịch sử hội thoại
+    st.session_state["chat_history"] += f"Chatbot: {bot_response}\n"
+
+    # Hiển thị phản hồi
+    st.write(f"**Chatbot:** {bot_response}")
